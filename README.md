@@ -1,36 +1,199 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+-   remove files from `public/*`
+-   clear `globals.css`
+-   clear `page.tsx`
+-   install shadcn `npx shadcn@latest init`
+-   install components `npx shadcn@latest add button label input sonner`
+-   show button and test `dev` server
 
-## Getting Started
+== PART 1 ==
 
-First, run the development server:
+-   install Better Auth `npm install better-auth`
+-   create `.env` and set Environment Variables
+-   create `lib/auth.ts`
+-   setup `postgres` database with `neon.tech`
+-   install prisma `npm install prisma --save-dev`
+-   initialize prisma `npx prisma init`
+-   create **Post** Model
+-   push database changes `npx prisma db push`
+-   add `generated` to `.gitignore`
+-   adjust **scripts** in `package.json`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   create single Prisma Client in `lib/prisma.ts`
+-   setup prisma adapter with better-auth
+-   generate auth tables `npx @better-auth/cli generate --output=auth.schema.prisma`
+-   make tweaks to `schema.prisma`
+-   quick walkthrough the models:
+    -   `User`
+    -   `Session`
+    -   `Account`
+    -   `Verification`
+-   push database changes `npx prisma db push`
+-   create Mount Handler in `app/api/auth/[...all]/route.ts`
+-   adjust `eslint.config.mjs` to ignore `/src/generated/**/*`
+-   create Client instance in `lib/auth-client.ts`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   Enable Email & Password Authentication
+-   Create Sign Up Page PT1
+    -   Create Form `components/register-form.tsx`
+    -   Log Form Values
+-   Setup Sonner
+-   Create Sign Up Page PT2
+    -   Add Form Validation
+    -   Destructure SignUp Function
+    -   Showcase `onError`
+-   OPTIONS - **minPasswordLength**
+-   Create Sign Up Page PT3
+    -   Sign Up _default automatically signs in the user_
+-   Show Session on Profile Page
+-   Show Data in Neon Dashboard
+-   Sign Out User
+    -   Destructure SignOut Function
+    -   Show Removed Cookies
+-   Create Sign In Page PT1
+    -   Create Form `components/login-form.tsx`
+    -   Log Form Values
+    -   Destructure SignIn Function
+-   Show Unauthorized on Profile Page
+-   Create Sign In Page PT2
+    -   Showcase `onError`
+    -   Sign In User
+-   FINISH PART 1
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+== PART 2 ==
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   Showcase `onRequest` and `onResponse`
+-   Showcase Full Cycle Again
+-   Add Convenience Links for Auth Pages
+-   OPTIONS - **autoSignIn**
+    -   Showcase
+-   OPTIONS - **advanced.database.generateId**
+    -   Table IDs (change `schema.prisma` and push)
+    -   Showcase
+    -   Truncate Tables
+-   OPTIONS - **emailAndPassword.password**
+    -   Create User
+    -   Argon2 `npm install @node-rs/argon2`
+    -   Add to `next.config.ts`
+    -   Create Utilities `lib/argon2.ts`
+    -   Add to `lib/auth.ts`
+    -   Showcase
+    -   Truncate Tables
+-   Create User
+-   Sign Up User via SERVER ACTIONS
+    -   Create Action
+    -   Log Form Values
+    -   Sign Up User on Server
+-   Sign In User via SERVER ACTIONS
+    -   Create Action
+    -   Log Form Values
+    -   Sign In User on Server
+    -   Showcase - No Cookies
+    -   Manually Set Cookies
+    -   Showcase - Cookies
+    -   Passing Headers to Sign In
+-   PLUGINS - **nextCookies()**
+-   FINISH PART 2
 
-## Learn More
+== PART 3 ==
 
-To learn more about Next.js, take a look at the following resources:
+-   Get Session on Client
+    -   Create Get Started Button
+    -   Destructure useSession
+    -   Showcase
+-   OPTIONS - **session.expiresIn**
+    -   Change to 15 seconds
+    -   Showcase
+    -   Change to 30 days
+-   Middleware
+    -   check for existence of a session cookie
+    -   showcase on auth routes
+-   Error Handling
+-   Hooks
+    -   Validate Email
+    -   Transform Name
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+== PART 4 ==
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+-   Roles (Custom Method)
+-   Prisma
+    -   Add UserRole Enum
+    -   Push changes `npx prisma db push`
+-   User
+    -   Show field is added beacuse of `@default`
+    -   Truncate Tables
+    -   Create new User
+-   Profile PT1
+    -   Show role is not typed in `session.user`
+-   OPTIONS - **user.additionalFields**
+    -   Showcase `input` option
+-   Profile PT2
+    -   Show role is now typed and added to `session.user`
+-   ISSUE: Client Session has no Context of the Role
+    -   Cute circle on `get-started-button.tsx`
+    -   InferAdditionalFields plugin on Client
+-   Admin Panel
+    -   Create Page / Link
+    -   Manually Change Role
+    -   Update Middleware
+    -   Guard `/admin/dashboard`
+    -   List Users With Prisma Query
+    -   Delete User With Prisma Query
+-   Database Hooks
+-   Roles (Admin Plugin)
+    -   generate auth tables `npx @better-auth/cli generate --output=roles.schema.prisma`
+    -   compare and contrast (look at Schema section)
+    -   Push changes `npx prisma db push`
+    -   Create Permissions (No Posts)
+    -   Add to `lib/auth.ts` and `lib/auth-client.ts`
+    -   List Users With Admin Plugin
+    -   EXERCISE: Delete User With Admin Plugin
+    -   Change Permissions (With Posts)
+-   Create Dropdown to Change Role for Admins
+-   FINISH PART 4
 
-## Deploy on Vercel
+== PART 5 ==
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+-   Google OAuth
+    -   Create Buttons
+-   GitHub OAuth
+-   Account Linking
+-   Error Handling
+    -   `/auth/login/error`
+-   FINISH PART 5
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+== PART 6 ==
+
+-   Nodemailer
+    -   Create Template
+-   Verify Email
+    -   `emailAndPassword.requireEmailVerification`
+    -   `emailVerification`
+    -   Handle Error / Expired `/auth/verify`
+    -   Destructure sendVerificationEmail
+    -   Handle Login Page Not Verified
+-   Create Post Sign Up Page
+    -   Showcase
+-   Forgot Password
+    -   Page / Form / Success
+-   Reset Password
+    -   Page / Form / Success
+    -   Showcase
+-   FINISH PART 6
+
+== PART 7 ==
+
+-   Show the image
+-   Updating User
+    -   change name / image
+    -   update hook
+    -   updating password
+-   Custom Sessions
+    -   type inference for plugins workaround
+-   PLUGINS - **Magic Link**
+    -   add to client instance
+    -   Create UI
+    -   adjust hooks
+-   Cookie Cache
+-   FINISH PART 7
+
+THANK YOU FOR WATCHING
