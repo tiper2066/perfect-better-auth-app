@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 게시글 테이블 - 생성하지만 사용하지 않을 꺼임(더미용)
+model Post {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())  // 기본값: 현재시간
+  updatedAt DateTime @updatedAt
+
+  title   String
+  content String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)  
+
+  @@map("posts")    // 실제 Postgres 의 테이블 생성시 이름을 posts 라고 함 (Post = posts 맵핑)
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime
+  updatedAt DateTime
+
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+
+  sessions Session[]
+  accounts Account[]
+  posts    Post[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  createdAt DateTime
+  updatedAt DateTime
+
+  expiresAt      DateTime
+  token          String   @unique
+  ipAddress      String?
+  userAgent      String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  createdAt DateTime
+  updatedAt DateTime
+
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id        String    @id @default(uuid())
+  createdAt DateTime?
+  updatedAt DateTime?
+
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  @@map("verifications")
+}
