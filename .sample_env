@@ -1,0 +1,9 @@
+# Batter Auth
+
+BETTER_AUTH_SECRET=tOpuRrfCmGff6Pe0BLVRKD5RFFHxqKRO
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:3000
+
+# Neon Postgres
+
+DATABASE_URL=postgresql://betterauthdb_owner:npg_7UzdcCweXTE1@ep-spring-fire-a1wu9zst-pooler.ap-southeast-1.aws.neon.tech/betterauthdb?sslmode=require
