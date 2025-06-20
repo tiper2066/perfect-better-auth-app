@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { signUp } from '@/lib/auth-client'; //  auth-client에서 signUp 함수 추출
 import { useRouter } from 'next/navigation'; //  추가
 import { useState } from 'react'; //  useState
 import { toast } from 'sonner';
+import { signUpEmailAction } from '@/actions/sign-up-email.action'; // *************** Server Action 함수 가져옴
 
 const RegisterForm = () => {
     const [isPanding, setIsPending] = useState(false); //  대기중 상태변수
@@ -15,44 +15,19 @@ const RegisterForm = () => {
     // form submit handler
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        setIsPending(false); // *************** 대기중 비활성
         const formData = new FormData(e.target as HTMLFormElement); // FormData 객체 생성
-        const name = formData.get('name') as string;
-        const email = formData.get('email') as string;
-        const password = formData.get('password') as string; // String(formData.get('password')) 와 동일함
+        const { error } = await signUpEmailAction(formData); // *************** Server Action 함수로 검사 및 에러 추출
 
-        // 유효성 검사 후 에러 메시지 출력
-        if (!name || !email || !password) {
-            return toast.error(
-                `Please enter your ${
-                    !name ? 'name' : !email ? 'email' : 'password'
-                }`
-            );
+        // 에러 메시지 출력
+        if (error) {
+            toast.error(error);
+            setIsPending(false);
+        } else {
+            toast.success("Registration complete. You're all set.");
+            router.push('/auth/login'); // 등록 성공 시 로그인 할 수 있도록 이동
         }
-
-        await signUp.email(
-            // better-auth 의 email 인증을 위해서 name, email, password 를 전달하면...
-            {
-                name,
-                email,
-                password,
-            },
-            // 요청에 대한 유효성 검사 후 응답에 대한 에러 메시지 출력 또는 성공 함수 실행
-            {
-                onRequest: () => {
-                    setIsPending(true); //  요청이 오면 대기중으로 상태 변경
-                },
-                onResponse: () => {
-                    setIsPending(false); //  응답완료면 대기중 아님으로 상태 변경 }
-                },
-                onError: (ctx) => {
-                    toast(ctx.error.message);
-                },
-                onSuccess: () => {
-                    toast.success('Registration complete. You are all set!');
-                    router.push('/profile');
-                },
-            }
-        );
     };
 
     return (
