@@ -1,33 +1,36 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { auth, ErrorCode } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { APIError } from 'better-auth/api';
+import { redirect } from 'next/navigation';
 
 export async function signInEmailAction(formData: FormData) {
     const email = String(formData.get('email'));
-    const password = String(formData.get('password'));
+    if (!email) return { error: 'Please enter your email' };
 
-    // 유효성 검사 후 에러 메시지 출력_toast에 적용할 에러 메시지만 반환함
-    if (!email || !password) {
-        return {
-            error: `Please enter your ${!email ? 'email' : 'password'}`,
-        };
-    }
+    const password = String(formData.get('password'));
+    if (!password) return { error: 'Please enter your password' };
 
     try {
-        // better-auth 에서 제공하는 서버측 signInEmail 함수 사용
         await auth.api.signInEmail({
-            headers: await headers(), // 사용자 브라우저 정보도 알수 있음
+            headers: await headers(),
             body: {
                 email,
                 password,
             },
         });
-
         return { error: null };
     } catch (err) {
-        if (err instanceof Error) {
-            return { error: 'Oops! Something went wrong. While logging in.' };
+        if (err instanceof APIError) {
+            const errCode = err.body ? (err.body.code as ErrorCode) : 'UNKNOWN';
+            console.dir(err, { depth: 5 });
+            switch (errCode) {
+                case 'EMAIL_NOT_VERIFIED':
+                    redirect('/auth/verify?error=email_not_verified');
+                default:
+                    return { error: err.message };
+            }
         }
 
         return { error: 'Internal Server Error' };
